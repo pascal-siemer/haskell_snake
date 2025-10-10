@@ -4,15 +4,15 @@ module Position where
     type Position = (Int, Int)
 
     x :: Position -> Int
-    x (x, _) = x
+    x (a, _) = a
 
     y :: Position -> Int
-    y (_, y) = y
+    y (_, b) = b
 
     add :: Direction -> Position -> Position
-    add direction (x, y) =
+    add direction (a, b) =
         case direction of
-            Direction.Up -> (x, y + 1)
-            Direction.Down -> (x, y - 1)
-            Direction.Left -> (x - 1, y)
-            Direction.Right -> (x + 1, y)
+            Direction.Up -> (a, b - 1)
+            Direction.Down -> (a, b + 1)
+            Direction.Left -> (a - 1, b)
+            Direction.Right -> (a + 1, b)

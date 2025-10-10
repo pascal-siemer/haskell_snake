@@ -74,11 +74,14 @@ executable haskell-snake
 
     -- Other library packages from which modules are imported.
     build-depends:    
+        text ^>=2.1.1,
         base ^>=4.20.0.0,
         mtl,
         stm,
         async,
-        flow
+        flow,
+        split,
+        random
 
 
     -- Directories containing source files.
@@ -93,4 +96,5 @@ executable haskell-snake
         OverloadedRecordDot,
         ExplicitNamespaces,
         MultiWayIf,
-        LambdaCase
+        LambdaCase,
+        TemplateHaskell

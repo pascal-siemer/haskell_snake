@@ -17,6 +17,10 @@ module Snake where
         Snake { segments }
         where segments = fmap f snake.segments
 
+    any :: (Position -> Bool) -> Snake -> Bool
+    any condition snake =
+        Prelude.any condition snake.segments
+
     move :: Direction -> Snake -> Snake
     move direction snake =
         case snake.segments of 
@@ -25,13 +29,24 @@ module Snake where
                 segments = (item |> Position.add direction) : (rest |> dropLast)
             }
 
+    prepend :: Direction -> Snake -> Snake
+    prepend direction snake =
+        case snake.segments of
+            [] -> snake
+            (item:rest) -> 
+                let new_head = item |> Position.add direction in 
+                snake { 
+                    segments = (new_head:item:rest) 
+                }
+
             
 
 
     dropLast :: [a] -> [a]
-    dropLast [] = []
-    dropLast [_] = []
-    dropLast (item:rest) = item : dropLast rest
+    dropLast = \case
+        [] -> []
+        [_] -> []
+        (item:rest) -> item : dropLast rest
 
     instance Show Snake where
         show self =

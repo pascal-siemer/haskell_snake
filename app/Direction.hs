@@ -1,10 +1,8 @@
-{-# LANGUAGE LambdaCase #-}
-
 module Direction where
     import Text.Read
 
-    data Direction =
-        Up
+    data Direction 
+        = Up
         | Down
         | Left
         | Right
