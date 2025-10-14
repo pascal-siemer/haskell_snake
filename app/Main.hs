@@ -52,8 +52,10 @@ process shared fn state = do
 
 
 play :: Char -> Game -> Game
-play item = Game.update message
-    where message = Move (read [item])
+play = 
+    singleton
+    .> read @Message
+    .> Game.update
 
     
 
