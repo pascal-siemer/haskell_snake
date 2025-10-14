@@ -39,15 +39,14 @@ module Game where
 
     overflow :: Game -> Position -> Position
     overflow game (x, y) =
-        let {
-            x' = mod x game.width;
-            y' = mod y game.height;
-        } in
-            (x', y')
+        let x' = mod x game.width in
+        let y' = mod y game.height in
+        (x', y')
 
 
     indent :: String -> String
-    indent = lines 
+    indent = 
+        lines 
         .> fmap ("\n\t" ++)
         .> foldl (++) ""
 
