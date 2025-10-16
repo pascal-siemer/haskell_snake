@@ -11,6 +11,15 @@ import qualified Game; import Game (type Game, type Message(Move))
 tickRate :: Int
 tickRate = 200000
 
+    main :: IO ()
+    main = do
+        configure_terminal
+        shared <- newTVarIO 'w'
+        withAsync (readInput shared) $ \writer ->
+            withAsync (process shared play (Game.init 12 8)) $ \reader ->
+                wait reader >> cancel writer;
+    
+                
 main :: IO ()
 main = do
     configure_terminal
@@ -44,11 +53,11 @@ generate_random_values range =
     readInput :: TVar Char -> IO ()
     readInput shared = do
         key <- getChar
-        if key == 'c' then 
-            return () 
-        else do 
-            atomically (writeTVar shared key)
-            readInput shared
+        if  | key == 'c' -> return () 
+            | otherwise -> do
+                atomically (writeTVar shared key);
+                readInput shared;
+
 
 process :: Show state => TVar Char -> (Char -> state -> state) -> state -> IO ()
 process shared fn state = do

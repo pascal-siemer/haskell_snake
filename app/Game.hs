@@ -9,11 +9,13 @@ module Game where
 
     import qualified Data.List.Split as List
     import qualified System.Random as Random
+    import qualified System.Random as Random
     import Data.Foldable (fold)
 >>>>>>> Stashed changes
 
 
     data Game = Game {
+        randoms :: [Position],
         randoms :: [Position],
         width :: Int,
         height :: Int,
