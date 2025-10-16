@@ -1,9 +1,8 @@
 module Game where
-    
     import Flow
-    
     import qualified Position; import Position (type Position)
     import qualified Direction; import Direction (type Direction(Up, Down, Left, Right))
+    import qualified Message; import Message (type Message(Move))
     import qualified Snake; import Snake (type Snake)
     import qualified Item; import Item (type Item(Apple))
 
@@ -15,7 +14,16 @@ module Game where
         items :: [Item]
     }
 
-    data Message = Move Direction
+    instance Show Game where
+        show self = 
+            "Game {\n" 
+            ++ "\twidth = " ++ show self.width ++ ",\n"
+            ++ "\theight = " ++ show self.height ++ ",\n"
+            ++ "\tsnake = \n" ++ indent (show self.snake)  ++ ",\n"
+            ++ "\titems = " ++ show self.items ++ ",\n"
+            ++ "}"
+
+
 
     new :: Game
     new = Game {
@@ -51,20 +59,4 @@ module Game where
         .> foldl (++) ""
 
 
-    instance Show Game where
-        show self = 
-            "Game {\n" 
-            ++ "\twidth = " ++ show self.width ++ ",\n"
-            ++ "\theight = " ++ show self.height ++ ",\n"
-            ++ "\tsnake = \n" ++ indent (show self.snake)  ++ ",\n"
-            ++ "\titems = " ++ show self.items ++ ",\n"
-            ++ "}"
 
-
-    -- getKeys :: IO [Char]
-    -- getKeys = reverse <$> recurse "" where { 
-    --     recurse sequence = do
-    --         keys <- hGetContents stdin
-    --         sequence <- hGetChar stdin <&> (\item -> item : sequence)
-    --         recurse sequence
-    -- }

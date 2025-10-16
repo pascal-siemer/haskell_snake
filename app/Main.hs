@@ -1,36 +1,36 @@
-
-import Data.Functor ((<&>))
-
-import qualified Direction; import Direction (type Direction(Up, Down, Left, Right))
-import Control.Monad
-import Data.Foldable
-import Debug.Trace
-
-import Data.Function ((&))
+import Flow
 import System.IO
 import Control.Concurrent
 import Control.Concurrent.STM
 import Control.Concurrent.Async
-import qualified Game; import Game (type Game, type Message(Move))
+import Data.List as List
+import System.Random as Random;
 
+import qualified Game; import Game (type Game, type Message(Move))
+                       
 tickRate :: Int
 tickRate = 200000
 
 main :: IO ()
 main = do
-    configure
+    configure_terminal
     shared <- newTVarIO 'w'
+    random_positions <- generate_random_values ((0, 0), (12, 8))
     withAsync (readInput shared) $ \writer ->
         withAsync (process shared play Game.new) $ \reader ->
             wait reader >> cancel writer
             
 
-configure :: IO ()
-configure = do
+configure_terminal :: IO ()
+configure_terminal = do
     hSetBuffering stdin NoBuffering
     hSetEcho stdin False
     hSetBuffering stdout NoBuffering
     hSetBinaryMode stdout True
+
+generate_random_values range =
+        Random.initStdGen 
+        >>= Random.uniformRs range
 
 readInput :: TVar Char -> IO ()
 readInput shared = do
@@ -44,8 +44,7 @@ readInput shared = do
 process :: Show state => TVar Char -> (Char -> state -> state) -> state -> IO ()
 process shared fn state = do
     threadDelay tickRate
-    item <- atomically (readTVar shared)
-    print item
+    item <- atomically (readTVar shared)    
     let state' = fn item state
     print state'
     process shared fn state' 
@@ -53,7 +52,7 @@ process shared fn state = do
 
 play :: Char -> Game -> Game
 play = 
-    singleton
+    List.singleton
     .> read @Message
     .> Game.update
 
