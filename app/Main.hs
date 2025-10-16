@@ -1,45 +1,50 @@
-import Flow
-import System.IO
-import Control.Concurrent
-import Control.Concurrent.STM
-import Control.Concurrent.Async
-import Data.List as List
-import System.Random as Random;
+module Main where 
+    import Data.Functor ((<&>))
 
-import qualified Game; import Game (type Game, type Message(Move))
-                       
-tickRate :: Int
-tickRate = 200000
+    import qualified Direction; import Direction (type Direction(Up, Down, Left, Right))
+    import Control.Monad
+    import Data.Foldable
+    import Debug.Trace
 
-main :: IO ()
-main = do
-    configure_terminal
-    shared <- newTVarIO 'w'
-    random_positions <- generate_random_values ((0, 0), (12, 8))
-    withAsync (readInput shared) $ \writer ->
-        withAsync (process shared play Game.new) $ \reader ->
-            wait reader >> cancel writer
-            
+    import Data.Function ((&))
+    import System.IO
+    import Control.Concurrent
+    import Control.Concurrent.STM
+    import Control.Concurrent.Async
+    import qualified Game; import Game (type Game, type Message(Move))
 
-configure_terminal :: IO ()
-configure_terminal = do
-    hSetBuffering stdin NoBuffering
-    hSetEcho stdin False
-    hSetBuffering stdout NoBuffering
-    hSetBinaryMode stdout True
+    tickRate :: Int
+    tickRate = 200000
+
+    main :: IO ()
+    main = do
+        configure
+        shared <- newTVarIO 'w'
+        withAsync (readInput shared) $ \writer ->
+            withAsync (process shared play Game.init) $ \reader ->
+                wait reader >> cancel writer
+                
+
+    configure_terminal :: IO ()
+    configure_terminal = do
+        hSetBuffering stdin NoBuffering
+        hSetEcho stdin False
+        hSetBuffering stdout NoBuffering
+        hSetBinaryMode stdout True
 
 generate_random_values range =
         Random.initStdGen 
         >>= Random.uniformRs range
 
-readInput :: TVar Char -> IO ()
-readInput shared = do
-    key <- getChar
-    if key == 'c' then 
-        return () 
-    else do 
-        atomically (writeTVar shared key)
-        readInput shared
+
+    readInput :: TVar Char -> IO ()
+    readInput shared = do
+        key <- getChar
+        if key == 'c' then 
+            return () 
+        else do 
+            atomically (writeTVar shared key)
+            readInput shared
 
 process :: Show state => TVar Char -> (Char -> state -> state) -> state -> IO ()
 process shared fn state = do
