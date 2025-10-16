@@ -1,29 +1,25 @@
-module Main where 
-    import Data.Functor ((<&>))
+import Flow
+import System.IO
+import Control.Concurrent
+import Control.Concurrent.STM
+import Control.Concurrent.Async
+import Data.List as List
+import System.Random as Random;
 
-    import qualified Direction; import Direction (type Direction(Up, Down, Left, Right))
-    import Control.Monad
-    import Data.Foldable
-    import Debug.Trace
+import qualified Game; import Game (type Game, type Message(Move))
+                       
+tickRate :: Int
+tickRate = 200000
 
-    import Data.Function ((&))
-    import System.IO
-    import Control.Concurrent
-    import Control.Concurrent.STM
-    import Control.Concurrent.Async
-    import qualified Game; import Game (type Game, type Message(Move))
-
-    tickRate :: Int
-    tickRate = 200000
-
-    main :: IO ()
-    main = do
-        configure
-        shared <- newTVarIO 'w'
-        withAsync (readInput shared) $ \writer ->
-            withAsync (process shared play Game.init) $ \reader ->
-                wait reader >> cancel writer
-                
+main :: IO ()
+main = do
+    configure_terminal
+    shared <- newTVarIO 'w'
+    random_positions <- generate_random_values ((0, 0), (12, 8))
+    withAsync (readInput shared) $ \writer ->
+        withAsync (process shared play Game.new) $ \reader ->
+            wait reader >> cancel writer
+            
 
     configure_terminal :: IO ()
     configure_terminal = do
@@ -31,6 +27,14 @@ module Main where
         hSetEcho stdin False
         hSetBuffering stdout NoBuffering
         hSetBinaryMode stdout True
+
+configure_terminal :: IO ()
+configure_terminal = do
+    hSetBuffering stdin NoBuffering
+    hSetEcho stdin False
+    hSetBuffering stdout NoBuffering
+    hSetBinaryMode stdout True
+
 
 generate_random_values range =
         Random.initStdGen 
