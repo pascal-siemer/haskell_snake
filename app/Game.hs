@@ -40,8 +40,8 @@ module Game where
     }
 
 
-    update :: Message -> Game -> Game
-    update (Move direction) game = 
+    update :: [Position] -> Message -> Game -> Game
+    update random_positions (Move direction) game = 
         game.snake
         |> Snake.move direction
         |> Snake.map (overflow game)

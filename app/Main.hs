@@ -9,6 +9,7 @@ import System.Random as Random;
 
 import qualified Game; import Game (type Game)
 import qualified Message; import Message (type Message)
+import qualified Position; import Position (type Position)
 import qualified Position;
 
                           
@@ -20,9 +21,9 @@ main :: IO ()
 main = do
     configure_terminal
     shared <- newTVarIO 'w'
-    random_positions <- generate_random_values @(Int, Int) ((0, 0), (12, 8))
+    random_positions <- generate_random_values @Position ((0, 0), (12, 8))
     withAsync (readInput shared) $ \writer ->
-        withAsync (process shared play Game.init) $ \reader ->
+        withAsync (process (play random_positions) shared Game.init) $ \reader ->
             wait reader >> cancel writer
             
 
@@ -41,28 +42,29 @@ generate_random_values range =
 
 
 readInput :: TVar Char -> IO ()
-readInput shared = do
-    key <- getChar
-    if  | key == 'c' -> return () 
-        | otherwise -> do
-            atomically (writeTVar shared key);
-            readInput shared;
+readInput shared =
+    getChar >>= \case
+        'c' -> 
+            return () 
+        key -> do
+            atomically (writeTVar shared key)
+            readInput shared
 
 
-process :: Show state => TVar Char -> (Char -> state -> state) -> state -> IO ()
-process shared fn state = do
+process :: Show state => (Char -> state -> state) -> TVar Char -> state -> IO ()
+process fn shared state = do
     threadDelay tickRate
-    item <- atomically (readTVar shared)    
-    let state' = fn item state
+    update <- fn <$> atomically (readTVar shared)
+    let state' = update state
     print state'
-    process shared fn state' 
+    process fn shared state' 
 
 
-play :: Char -> Game -> Game
-play = 
+play :: [Position] -> Char -> Game -> Game
+play random_positions = 
     List.singleton
     .> read @Message
-    .> Game.update
+    .> Game.update random_positions 
 
     
 
