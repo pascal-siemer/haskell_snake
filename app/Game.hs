@@ -5,23 +5,19 @@ module Game where
     import qualified Message; import Message (type Message(Move))
     import qualified Snake; import Snake (type Snake)
     import qualified Item; import Item (type Item(Apple))
-<<<<<<< Updated upstream
 
     import qualified Data.List.Split as List
     import qualified System.Random as Random
-    import qualified System.Random as Random
     import Data.Foldable (fold)
->>>>>>> Stashed changes
 
 
     data Game = Game {
-        randoms :: [Position],
-        randoms :: [Position],
         width :: Int,
         height :: Int,
         snake :: Snake,
         items :: [Item]
     }
+
 
     instance Show Game where 
         show game = 
@@ -35,28 +31,22 @@ module Game where
                 segments = fmap (\(x, y) -> x + (y * game.width)) game.snake.segments
 
 
-<<<<<<< Updated upstream
-
-    new :: Game
-    new = Game {
+    init :: Game
+    init = Game {
         width = 12,
         height = 8,
         snake = Snake.new (6, 4),
         items = []
     }
 
+
     update :: Message -> Game -> Game
     update (Move direction) game = 
-        let {
-            snake = game.snake
-            |> Snake.move direction
-            |> Snake.map (overflow game)
-        } in 
-            game { snake }
-=======
-        
+        game.snake
+        |> Snake.move direction
+        |> Snake.map (overflow game)
+        |> \snake -> game { snake }
 
-            
 
     overflow :: Game -> Position -> Position
     overflow game (x, y) =
@@ -70,6 +60,3 @@ module Game where
         lines 
         .> fmap ("\n\t" ++)
         .> foldl (++) ""
-
-
-

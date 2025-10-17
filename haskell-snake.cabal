@@ -65,6 +65,7 @@ executable haskell-snake
     other-modules:
         Direction,
         Game,
+        Message,
         Snake,
         Item,
         Position,
@@ -94,6 +95,7 @@ executable haskell-snake
         OverloadedStrings,
         OverloadedLists,
         OverloadedRecordDot,
+        NamedFieldPuns,
         ExplicitNamespaces,
         MultiWayIf,
         LambdaCase,
