@@ -3,10 +3,12 @@ module Game where
     import qualified Position; import Position (type Position)
     import qualified Direction; import Direction (type Direction(Up, Down, Left, Right))
     import qualified Message; import Message (type Message(Move))
-    import qualified Snake; import Snake (type Snake)
+    import qualified Snake2; import Snake2 (type Snake)
     import qualified Item; import Item (type Item(Apple))
 
+    import qualified Data.List as List
     import qualified Data.List.Split as List
+
     import qualified System.Random as Random
     import Data.Foldable (fold)
 
@@ -32,20 +34,25 @@ module Game where
 
 
     init :: Game
-    init = Game {
-        width = 12,
-        height = 8,
-        snake = Snake.new (6, 4),
-        items = []
-    }
+    init = 
+        Game {
+            width = 12,
+            height = 8,
+            snake = Snake.new (6, 4),
+            items = []
+        }
 
 
-    update :: [Position] -> Message -> Game -> Game
-    update random_positions (Move direction) game = 
+    update :: [Position] -> Message -> Game -> ([Position], Game)
+    update random_positions (Move direction) game@(Game{snake=[]}) = (random_positions, game)
+    update random_positions (Move direction) game@(Game{snake=(current:next)}) = 
+        let act = game.items |> List.find (\item ->)
+        
+
         game.snake
         |> Snake.move direction
         |> Snake.map (overflow game)
-        |> \snake -> game { snake }
+        |> \snake -> (random_positions, game { snake })
 
 
     overflow :: Game -> Position -> Position
